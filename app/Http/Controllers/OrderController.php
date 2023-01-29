@@ -21,7 +21,7 @@ class OrderController extends Controller
         $orders = Order::paginate()
                 ->through(fn($order)=>new OrderResource($order));
 
-        return $this->sendSuccessResponse($orders->toArray(),'Order List');
+        return $this->sendSuccessResponse($orders,'Order List');
     }
 
     /**
@@ -45,7 +45,7 @@ class OrderController extends Controller
             'customer_phone'=>$request->phone
         ]);
 
-        return $this->sendSuccessResponse($order,'Order Created');
+        return $this->sendSuccessResponse(new OrderResource($order),'Order Created');
     }
 
     /**
@@ -102,7 +102,7 @@ class OrderController extends Controller
 
         $product = Product::find($request->product_id);
 
-        $order_product = $order->products()->find($request->product_id);
+        $order_product = $order->products()->where('product_id',$request->product_id)->first();
 
         if($order_product){
             $order_product->quantity +=1;
@@ -134,15 +134,16 @@ class OrderController extends Controller
 
         $paymentResponse = $paymentGateway->makePayment($paymentData);
         if($paymentResponse['status']){
-            $order->payment_status = 'success';
-            $order->status = 'complete';
-            $order->save();
-            $order->payments()->create([
+            $payment = $order->payments()->create([
                 'message'=>$paymentResponse['message'],
                 'amount'=>$order->total,
                 'status'=>'success',
                 'response'=>$paymentResponse['data']
             ]);
+            $order->payment_id = $payment->id;
+            $order->payment_status = 'success';
+            $order->status = 'complete';
+            $order->save();
             return $this->sendSuccessResponse([],'Order Placed');
         }
 
@@ -153,6 +154,6 @@ class OrderController extends Controller
             'response'=>$paymentResponse['data']
         ]);
         
-        return $this->sendSuccessResponse($paymentResponse,'Something went wrong');
+        return $this->sendErrorResponse($paymentResponse['message'],'Something went wrong',500);
     }
 }

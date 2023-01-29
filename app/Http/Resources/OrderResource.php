@@ -28,6 +28,7 @@ class OrderResource extends JsonResource
             'customer_email'=>$this->order->customer_email,
             'customer_phone'=>$this->order->customer_phone,
             'payment_status'=>$this->order->payment_status,
+            'status'=>$this->order->status,
             'total'=>$this->order->total,
             'created_at'=>$this->order->created_at->format('d M Y H:i A'),
             'products'=>$this->withProducts?$this->order->products->map(fn($product)=>new ProductResource($product)):[]
