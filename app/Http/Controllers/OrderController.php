@@ -79,7 +79,7 @@ class OrderController extends Controller
         $order->customer_phone = $request->phone;
         $order->save();
 
-        return $this->sendSuccessResponse(new OrderResource($order,true),'Order Created');
+        return $this->sendSuccessResponse(new OrderResource($order,true),'Order Updated');
     }
 
     /**
@@ -121,7 +121,7 @@ class OrderController extends Controller
         $order->total = $order->products()->sum('total');
         $order->save();
 
-        return $this->sendSuccessResponse(new OrderResource($order,true),'Order Deleted');
+        return $this->sendSuccessResponse(new OrderResource($order,true),'Product added in order');
     }
 
     public function pay(Request $request, Order $order, PaymentGateway $paymentGateway)
@@ -144,7 +144,7 @@ class OrderController extends Controller
             $order->payment_status = 'success';
             $order->status = 'complete';
             $order->save();
-            return $this->sendSuccessResponse([],'Order Placed');
+            return $this->sendSuccessResponse([],'Order Paid');
         }
 
         $order->payments()->create([
