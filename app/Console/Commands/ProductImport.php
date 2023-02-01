@@ -31,7 +31,7 @@ class ProductImport extends Command
     public function handle()
     {
         Product::truncate();
-        $response = Http::withBasicAuth('loop','backend_dev')->get('https://backend-developer.view.agentur-loop.com/products.csv');
+        $response = Http::withBasicAuth(config('loop.loop_user'),config('loop.loop_password'))->get('https://backend-developer.view.agentur-loop.com/products.csv');
         if($response->ok()){
             $data = $this->csvStringToArray($response->body());
             unset($data[0]);

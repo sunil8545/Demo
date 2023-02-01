@@ -56,7 +56,7 @@ class OrderController extends Controller
      */
     public function show(Order $order)
     {
-        return $this->sendSuccessResponse(new OrderResource($order,true),'Order Retrieved');
+        return $this->sendSuccessResponse(new OrderResource($order->load('products')),'Order Retrieved');
     }
 
     /**
@@ -121,7 +121,7 @@ class OrderController extends Controller
         $order->total = $order->products()->sum('total');
         $order->save();
 
-        return $this->sendSuccessResponse(new OrderResource($order,true),'Product added in order');
+        return $this->sendSuccessResponse(new OrderResource($order->load('products')),'Product added in order');
     }
 
     public function pay(Request $request, Order $order, PaymentGateway $paymentGateway)

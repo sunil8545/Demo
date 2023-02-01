@@ -22,7 +22,7 @@ return new class extends Migration
             $table->unsignedBigInteger('payment_id')->nullable();
             $table->unsignedBigInteger('payment_status')->nullable();
             $table->decimal('total')->default(0);
-            $table->decimal('status')->default('pending');
+            $table->string('status')->default('pending');
             $table->timestamps();
         });
     }
